@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مصحف - برنامج القرآن الكريم</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;500;600;700;800&family=Scheherazade+New:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="scripts.js" defer></script>
+</head>
+<body>
+
+    <!-- Settings Button -->
+    <button class="settings-btn" id="settingsBtn" title="الإعدادات">⚙️</button>
+
+    <!-- Toast container -->
+    <div id="toastContainer"></div>
+
+    <!-- First-time Setup Modal -->
+    <div class="modal-overlay" id="setupModal" style="display:none;">
+        <div class="modal">
+            <h2>🕌 مرحباً بك في المصحف</h2>
+            <p style="font-family:var(--font-arabic);font-size:1.2rem;color:var(--gold);">بسم الله الرحمن الرحيم</p>
+            <p>يبدو أنك تفتح البرنامج لأول مرة. يرجى إعداد تفضيلاتك.</p>
+            <label for="dailyCountSelect" style="font-weight:600;display:block;margin-bottom:4px;">📖 عدد آيات الورد اليومي:</label>
+            <select id="dailyCountSelect">
+                <option value="5">٥ آيات</option>
+                <option value="10">١٠ آيات</option>
+                <option value="15">١٥ آية</option>
+                <option value="20">٢٠ آية</option>
+                <option value="25">٢٥ آية</option>
+                <option value="30">٣٠ آية</option>
+                <option value="50">٥٠ آية</option>
+                <option value="100">١٠٠ آية</option>
+            </select>
+            <label for="reciterSelect" style="font-weight:600;display:block;margin-bottom:4px;">🎙️ القارئ المفضل:</label>
+            <select id="reciterSelect"></select>
+            <br>
+            <button class="btn btn-primary" onclick="completeSetup()">✅ بدء استخدام المصحف</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal" style="display:none;">
+        <div class="modal" style="text-align:right;">
+            <h2 style="text-align:center;">⚙️ الإعدادات</h2>
+            <label style="font-weight:600;">📖 عدد آيات الورد اليومي:</label>
+            <select id="settingsDailyCount">
+                <option value="5">٥ آيات</option>
+                <option value="10">١٠ آيات</option>
+                <option value="15">١٥ آية</option>
+                <option value="20">٢٠ آية</option>
+                <option value="25">٢٥ آية</option>
+                <option value="30">٣٠ آية</option>
+                <option value="50">٥٠ آية</option>
+                <option value="100">١٠٠ آية</option>
+            </select>
+            <label style="font-weight:600;margin-top:8px;">🎙️ القارئ المفضل:</label>
+            <select id="settingsReciter"></select>
+            <hr style="margin:14px 0;border-color:var(--border);">
+            <button class="btn btn-primary btn-sm" onclick="saveSettings()">💾 حفظ الإعدادات</button>
+            <button class="btn btn-outline btn-sm" onclick="resetProgress()" style="color:var(--danger);border-color:var(--danger);">🔄 إعادة ضبط التقدم</button>
+            <button class="btn btn-outline btn-sm" onclick="closeSettings()">❌ إغلاق</button>
+        </div>
+    </div>
+    <!-- Main App -->
+    <div class="app-container" id="mainApp" style="display:none;">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="basmala">﷽</div>
+            <h1>📖 المصحف الكريم</h1>
+            <div class="subtitle">حفظ · تلاوة · تدبر</div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" id="tabMemorization" onclick="switchTab('memorization')">
+                <span class="tab-icon">📝</span> وضع الحفظ
+            </button>
+            <button class="tab-btn" id="tabReading" onclick="switchTab('reading')">
+                <span class="tab-icon">📖</span> وضع القراءة
+            </button>
+        </div>
+
+        <!-- Memorization Mode -->
+        <div id="memorizationMode">
+            <!-- Stats -->
+            <div class="stats-row" id="memStats"></div>
+            <!-- Today's portion -->
+            <div class="card" id="dailyPortionCard">
+                <div class="card-header">
+                    <span class="icon">🌅</span> ورد اليوم
+                    <span style="font-size:0.8rem;color:var(--text-muted);" id="portionRange"></span>
+                </div>
+                <ul class="verse-list" id="dailyPortionList"></ul>
+                <div style="text-align:center;margin-top:14px;">
+                    <button class="btn btn-gold" id="completePortionBtn" onclick="completeDailyPortion()">
+                        ✅ أكملت ورد اليوم
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="playAllPortion()" style="margin-right:8px;">
+                        ▶️ تشغيل الورد كاملاً
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reading Mode -->
+        <div id="readingMode" style="display:none;">
+            <div class="card" id="surahListCard">
+                <div class="card-header">
+                    <span class="icon">📚</span> فهرس السور
+                    <button class="btn btn-sm btn-outline" onclick="goToBookmark()" style="margin-right:auto;" title="الذهاب إلى العلامة">📑 العلامة</button>
+                </div>
+                <div class="surah-grid" id="surahGrid"></div>
+            </div>
+            <div class="card" id="surahDetailCard" style="display:none;">
+                <div class="card-header">
+                    <span class="icon">🔍</span>
+                    <span id="surahDetailTitle"></span>
+                    <button class="btn btn-sm btn-outline" onclick="backToSurahList()" style="margin-right:auto;">⬅️ العودة للفهرس</button>
+                </div>
+                <div class="toggle-row" style="padding:4px 0;margin-bottom:8px;">
+                    <span class="toggle-label">🔄 تشغيل تلقائي للآيات</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="autoPlayToggle" onchange="toggleAutoPlay()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <ul class="verse-list" id="surahVersesList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Player Bar -->
+<div class="audio-bar" id="audioBar" style="display:none;">
+    <div class="audio-top-row">
+        <span class="now-playing-info" id="nowPlayingLabel">اختر آية للتشغيل</span>
+        <button class="btn-icon audio-bookmark-btn" id="bookmarkBtn" onclick="toggleBookmark()" title="علامة">📑</button>
+    </div>
+    
+    <audio id="audioPlayer" controls preload="none" onended="onAudioEnded()" onerror="onAudioError()">
+        <source src="" type="audio/mpeg">
+        متصفحك لا يدعم تشغيل الصوت.
+    </audio>
+
+    <div class="audio-cons">
+        <button class="btn-icon btn-sm" onclick="playNextVerse()" title="التالي">⏭️</button>
+        <button class="btn-icon btn-sm" onclick="playPreviousVerse()" title="السابق">⏮️</button>
+    </div>
+</div>
+
+    
+</body>
+</html>
