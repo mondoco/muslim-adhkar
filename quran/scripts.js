@@ -8145,6 +8145,8 @@ function renderReadingMode() {
     document.getElementById('surahListCard').style.display = 'block';
     document.getElementById('surahDetailCard').style.display = 'none';
     document.getElementById('autoPlayToggle').checked = appState.autoPlay;
+    showSurahDetail(appState.readingBookmark.surahIndex, appState.readingBookmark.verseNumber);
+
 }
 
 // ==================== UI SWITCHING ====================
