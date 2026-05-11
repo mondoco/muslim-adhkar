@@ -393,6 +393,10 @@
         const debtContainer = document.getElementById('debt-list');
         debtContainer.innerHTML = '';
         let hasDebts = false;
+
+        document.getElementById('telawaBox').innerHTML= `<p id ="telawaBtn" style="padding: 15px 10px; font-weight: bold; margin: 0; width: 100%; color: #17179f;">أبدا تلاوة اليوم</p>
+            <button style="margin: 8px 8px; font-weight: bold; width: 100px; border-radius: 8px; background-color: #7c7cff; border: 0px; color: #fff;" onclick="telawa()">عرض</button>`;
+        
         
         for (const prayerName of PRAYERS) {
             const count = db.debts[prayerName] || 0;
