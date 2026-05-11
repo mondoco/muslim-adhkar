@@ -207,8 +207,8 @@
             <button style="margin: 8px 8px; font-weight: bold; width: 100px; border-radius: 8px; background-color: #6de6bf; border: 0px; color: #fff;" onclick="window.location.href='quran/index.html'">عرض</button>
         </div>
         <div style="background-color: #f3f3ff; height: 50px; margin: 10px 0px; border-radius: 10px; border: 1px solid #2e2eff; display: flex;">
-            <p style="padding: 15px 10px; font-weight: bold; margin: 0; width: 100%; color: #17179f;">أبدا تلاوة اليوم</p>
-            <button style="margin: 8px 8px; font-weight: bold; width: 100px; border-radius: 8px; background-color: #7c7cff; border: 0px; color: #fff;" onclick="window.location.href='quran/index.html?mode=2'">عرض</button>
+            <p id ="telawaBtn" style="padding: 15px 10px; font-weight: bold; margin: 0; width: 100%; color: #17179f;">أبدا تلاوة اليوم</p>
+            <button style="margin: 8px 8px; font-weight: bold; width: 100px; border-radius: 8px; background-color: #7c7cff; border: 0px; color: #fff;" onclick="telawa()">عرض</button>
         </div>
     </div>
 
@@ -500,6 +500,7 @@
             });
             db.today = [false, false, false, false, false];
             db.adhkar = { morning: false, evening: false };
+            localStorage.setItem('telawa_mode', 'false');
             document.getElementById('openModalBtnm').style.display = 'block';
             document.getElementById('openModalBtne').style.display = 'block';
             updateUI();
@@ -514,23 +515,8 @@
 
     window.onclick = (e) => { if(e.target.className === 'modal') closeModal(); }
 
-let appState = {
-    dailyVerseCount: 10,
-    // memorization progress: { surahIndex: 0-based, verseNumber: 1-based }
-    progress: { surahIndex: 0, verseNumber: 1 },
-};
 
-    function loadFromStorage() {
-        const raw = localStorage.getItem('quran_app_data');
-        if (raw) {
-                const data = JSON.parse(raw);
-                appState.dailyVerseCount = data.dailyVerseCount || 10;
-                appState.progress = data.progress || { surahIndex: 0, verseNumber: 1 };
-            
-        }
-    }
-
-    const surahs = [
+ const surahs = [
     { name: 'الفاتحة', verses: 7 }, { name: 'البقرة', verses: 286 }, { name: 'آل عمران', verses: 200 },
     { name: 'النساء', verses: 176 }, { name: 'المائدة', verses: 120 }, { name: 'الأنعام', verses: 165 },
     { name: 'الأعراف', verses: 206 }, { name: 'الأنفال', verses: 75 }, { name: 'التوبة', verses: 129 },
@@ -571,6 +557,36 @@ let appState = {
     { name: 'الإخلاص', verses: 4 }, { name: 'الفلق', verses: 5 }, { name: 'الناس', verses: 6 }
 ];
     
+
+let appState = {
+    dailyVerseCount: 10,
+    // memorization progress: { surahIndex: 0-based, verseNumber: 1-based }
+    progress: { surahIndex: 0, verseNumber: 1 },
+    readingBookmark: null, // { surahIndex, verseNumber }
+};
+
+    function loadFromStorage() {
+        const raw = localStorage.getItem('quran_app_data');
+        
+        if (raw) {
+                const data = JSON.parse(raw);
+                appState.dailyVerseCount = data.dailyVerseCount || 10;
+                appState.progress = data.progress || { surahIndex: 0, verseNumber: 1 };
+                appState.readingBookmark = data.readingBookmark || null;
+        }
+    }
+
+    function telawa() {
+        localStorage.setItem('telawa_mode', 'true');
+        // الانتقال إلى صفحة التلاوة
+        window.location.href = 'quran/index.html';
+    }
+
+    if (localStorage.getItem('telawa_mode') === 'true'){
+        document.getElementById('telawaBtn').innerText = 'تمت تلاوة اليوم توقفت عند سورة ' + surahs[JSON.parse(localStorage.getItem('quran_app_data')).readingBookmark.surahIndex].name + ' آية ' + JSON.parse(localStorage.getItem('quran_app_data')).readingBookmark.verseNumber;
+    }
+
+   
     function getGlobalVerseIndex(surahIndex, verseNumber) {
         let count = 0;
         for (let i = 0; i < surahIndex; i++) {
