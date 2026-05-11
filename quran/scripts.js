@@ -8167,6 +8167,10 @@ const mode = urlParams.get('mode');
 if (mode === '2'){
   console.log(mode)
   switchTab('reading')
+    if (appState.readingBookmark!== null){
+    console.log(appState.readingBookmark);
+    showSurahDetail(appState.readingBookmark.surahIndex, appState.readingBookmark.verseNumber);
+}
 }
 function updateAllUI() {
     if (appState.currentTab === 'memorization') {
